@@ -5,7 +5,7 @@ jobs:
   build:
     docker:
       - image: circleci/golang:1.13.2
-    working_directory: /go/src/github.com/{{CIRCLE_PROJECT_USERNAME}}/{{CIRCLE_PROJECT_REPONAME}}
+    working_directory: /go/src/github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME
     steps:
       # check out code
       - checkout
