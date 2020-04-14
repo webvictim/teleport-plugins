@@ -1,0 +1,23 @@
+# Golang CircleCI 2.0 configuration file
+# Check https://circleci.com/docs/2.0/language-go/ for more details
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/golang:1.13.2
+    working_directory: /go/src/github.com/{{ORG_NAME}}/{{REPO_NAME}}
+    steps:
+      # check out code
+      - checkout
+      # get dependencies
+      - run: go get -v -t -d ./...
+      # dep ensure
+      - run: if [ -f Gopkg.toml ]; then curl -s https://raw.githubusercontent.com/golang/dep/master/install.sh | sh; dep ensure; fi
+      # jira tests
+      - run: make -C access/jirabot test
+      # slack tests
+      - run: make -C access/slackbot test
+      # mattermost tests
+      - run: make -C access/mattermost test
+      # pagerduty tests
+      - run: make -C access/pagerduty test
