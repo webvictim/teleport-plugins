@@ -7,13 +7,19 @@ jobs:
       - image: cimg/go:1.13.2
     working_directory: /go/src/github.com/webvictim/teleport-plugins
     steps:
-      - run: git clone https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      # check out code
+      - run:
+        name: Check out code
+        command: |
+          git clone https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .        
       # restore module cache
       - restore_cache:
           keys:
             - go-cache-
       # get dependencies
-      - run: |
+      - run:
+        name: Get dependencies
+        command: |
           go version
           go env
           go get -v -t -d ./...
@@ -22,7 +28,9 @@ jobs:
             dep ensure
           fi
       # run tests
-      - run: |
+      - run: 
+        name: Run tests
+        command: |
           make -C access/jirabot test
           make -C access/slackbot test
           make -C access/mattermost test
