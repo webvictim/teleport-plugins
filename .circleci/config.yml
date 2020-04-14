@@ -11,12 +11,15 @@ jobs:
       - run:
           name: Check out code
           command: |
+            whoami
             pwd
             git clone https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .        
       # get dependencies
       - run:
           name: Get dependencies
           command: |
+            whoami
+            pwd
             go version
             go env
             go get -v -t -d ./...
