@@ -9,32 +9,32 @@ jobs:
     steps:
       # check out code
       - run:
-        name: Check out code
-        command: |
-          git clone https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .        
+          name: Check out code
+          command: |
+            git clone https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .        
       # restore module cache
       - restore_cache:
           keys:
             - go-cache-
       # get dependencies
       - run:
-        name: Get dependencies
-        command: |
-          go version
-          go env
-          go get -v -t -d ./...
-          if [ -f Gopkg.toml ]; then
-            curl -s https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
-            dep ensure
-          fi
+          name: Get dependencies
+          command: |
+            go version
+            go env
+            go get -v -t -d ./...
+            if [ -f Gopkg.toml ]; then
+              curl -s https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
+              dep ensure
+            fi
       # run tests
       - run: 
-        name: Run tests
-        command: |
-          make -C access/jirabot test
-          make -C access/slackbot test
-          make -C access/mattermost test
-          make -C access/pagerduty test
+          name: Run tests
+          command: |
+            make -C access/jirabot test
+            make -C access/slackbot test
+            make -C access/mattermost test
+            make -C access/pagerduty test
       # save module cache after successful run
       - save_cache:
           key: go-cache-
