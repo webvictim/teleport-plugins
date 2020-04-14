@@ -8,6 +8,7 @@ jobs:
     working_directory: /go/src/github.com/gravitational/teleport-plugins
     environment:
       TEST_RESULTS: /tmp/test-results
+      TEST_LIST: "jirabot slackbot mattermost pagerduty"
     steps:
       # check out code
       - run:
@@ -21,7 +22,7 @@ jobs:
       # restore module cache
       - restore_cache:
           keys:
-            - go-cache-            
+            - go-cache-
       # get dependencies
       - run:
           name: Get dependencies
@@ -36,12 +37,11 @@ jobs:
       - run: 
           name: Run tests
           command: |
-            trap "go-junit-report <${TEST_RESULTS}/go-test.out > ${TEST_RESULTS}/go-test-report.xml" EXIT
-            mkdir -p ${TEST_RESULTS}
-            make -C access/jirabot test | tee -a ${TEST_RESULTS}/go-test.out
-            make -C access/slackbot test | tee -a ${TEST_RESULTS}/go-test.out
-            make -C access/mattermost test | tee -a ${TEST_RESULTS}/go-test.out
-            make -C access/pagerduty test | tee -a ${TEST_RESULTS}/go-test.out
+            for TEST_NAME in ${TEST_LIST}; do
+              mkdir -p ${TEST_RESULTS}/${TEST_NAME}
+              make -C access/${TEST_NAME} test | tee ${TEST_RESULTS}/${TEST_NAME}/go-test.out
+              go-junit-report <${TEST_RESULTS}/${TEST_NAME}/go-test.out > ${TEST_RESULTS}/${TEST_NAME}/results.xml
+            done
       # save module cache after successful run
       - save_cache:
           key: go-cache-
