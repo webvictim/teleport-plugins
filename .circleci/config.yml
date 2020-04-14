@@ -4,8 +4,10 @@ version: 2
 jobs:
   build:
     docker:
-      - image: cimg/go:1.13.2
+      - image: circleci/golang:1.13.2
     working_directory: /go/src/github.com/gravitational/teleport-plugins
+    environment:
+      TEST_RESULTS: /tmp/test-results
     steps:
       # check out code
       - run:
@@ -33,12 +35,20 @@ jobs:
       - run: 
           name: Run tests
           command: |
-            make -C access/jirabot test
-            make -C access/slackbot test
-            make -C access/mattermost test
-            make -C access/pagerduty test
+            trap "go-junit-report <${TEST_RESULTS}/go-test.out > ${TEST_RESULTS}/go-test-report.xml" EXIT
+            make -C access/jirabot test | tee -a ${TEST_RESULTS}/go-test.out
+            make -C access/slackbot test  | tee -a ${TEST_RESULTS}/go-test.out
+            make -C access/mattermost test  | tee -a ${TEST_RESULTS}/go-test.out
+            make -C access/pagerduty test | tee -a ${TEST_RESULTS}/go-test.out
       # save module cache after successful run
       - save_cache:
           key: go-cache-
           paths:
             - "/go/pkg/mod"
+      # store raw test output
+      - store_artifacts:
+          path: /tmp/test-results
+          destination: raw-test-output
+      # store test result output
+      - store_test_results:
+          path: /tmp/test-results
