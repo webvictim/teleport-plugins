@@ -36,9 +36,10 @@ jobs:
           name: Run tests
           command: |
             trap "go-junit-report <${TEST_RESULTS}/go-test.out > ${TEST_RESULTS}/go-test-report.xml" EXIT
+            touch ${TEST_RESULTS}/go-test.out
             make -C access/jirabot test | tee -a ${TEST_RESULTS}/go-test.out
-            make -C access/slackbot test  | tee -a ${TEST_RESULTS}/go-test.out
-            make -C access/mattermost test  | tee -a ${TEST_RESULTS}/go-test.out
+            make -C access/slackbot test | tee -a ${TEST_RESULTS}/go-test.out
+            make -C access/mattermost test | tee -a ${TEST_RESULTS}/go-test.out
             make -C access/pagerduty test | tee -a ${TEST_RESULTS}/go-test.out
       # save module cache after successful run
       - save_cache:
