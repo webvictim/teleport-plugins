@@ -37,7 +37,7 @@ jobs:
           name: Run tests
           command: |
             trap "go-junit-report <${TEST_RESULTS}/go-test.out > ${TEST_RESULTS}/golang/results.xml" EXIT
-            mkdir -p ${TEST_RESULTS}
+            mkdir -p ${TEST_RESULTS}/golang
             make -C access/jirabot test | tee -a ${TEST_RESULTS}/go-test.out
             make -C access/slackbot test | tee -a ${TEST_RESULTS}/go-test.out
             make -C access/mattermost test | tee -a ${TEST_RESULTS}/go-test.out
