@@ -4,14 +4,18 @@ version: 2
 jobs:
   build:
     docker:
-      - image: circleci/golang:1.13.2
+      - image: cimg/golang:1.13.2
     working_directory: /go/src/github.com/webvictim/teleport-plugins
     steps:
       # check out code
       - checkout
+      # restore module cache
       - restore_cache:
           keys:
-            - pkg-cache-
+            - go-mod-cache-{{ checksum "go.sum" }}
+      # env
+      - run: go version
+      - run: go env
       # get dependencies
       - run: go get -v -t -d ./...
       # dep ensure
@@ -24,3 +28,8 @@ jobs:
       - run: make -C access/mattermost test
       # pagerduty tests
       - run: make -C access/pagerduty test
+      # save module cache after successful run
+      - save_cache:
+          key: go-mod-cache-{{ checksum "go.sum" }}
+          paths:
+            - "/go/pkg/mod"
