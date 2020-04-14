@@ -4,7 +4,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: cimg/golang:1.13.2
+      - image: cimg/golang:1.13
     working_directory: /go/src/github.com/webvictim/teleport-plugins
     steps:
       # check out code
