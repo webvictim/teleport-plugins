@@ -9,6 +9,9 @@ jobs:
     steps:
       # check out code
       - checkout
+      - restore_cache:
+          keys:
+            - v1-pkg-cache
       # get dependencies
       - run: go get -v -t -d ./...
       # dep ensure
