@@ -5,14 +5,14 @@ jobs:
   build:
     docker:
       - image: cimg/go:1.13.2
-    working_directory: /go/src/github.com/webvictim/teleport-plugins
+    working_directory: /go/src/github.com/$ORG_NAME/$REPO_NAME
     steps:
       # check out code
       - checkout
       # restore module cache
       - restore_cache:
           keys:
-            - go-mod-cache-{{ checksum "go.sum" }}
+            - go-cache-
       # env
       - run: go version
       - run: go env
@@ -30,6 +30,6 @@ jobs:
       - run: make -C access/pagerduty test
       # save module cache after successful run
       - save_cache:
-          key: go-mod-cache-{{ checksum "go.sum" }}
+          key: go-cache-
           paths:
             - "/go/pkg/mod"
