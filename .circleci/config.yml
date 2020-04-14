@@ -5,29 +5,28 @@ jobs:
   build:
     docker:
       - image: cimg/go:1.13.2
-    working_directory: /go/src/github.com/$ORG_NAME/$REPO_NAME
+    working_directory: /go/src/github.com/webvictim/teleport-plugins
     steps:
-      # check out code
-      - checkout
+      - run: git clone https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
       # restore module cache
       - restore_cache:
           keys:
             - go-cache-
-      # env
-      - run: go version
-      - run: go env
       # get dependencies
-      - run: go get -v -t -d ./...
-      # dep ensure
-      - run: if [ -f Gopkg.toml ]; then curl -s https://raw.githubusercontent.com/golang/dep/master/install.sh | sh; dep ensure; fi
-      # jira tests
-      - run: make -C access/jirabot test
-      # slack tests
-      - run: make -C access/slackbot test
-      # mattermost tests
-      - run: make -C access/mattermost test
-      # pagerduty tests
-      - run: make -C access/pagerduty test
+      - run: |
+        go version
+        go env
+        go get -v -t -d ./...
+        if [ -f Gopkg.toml ]; then
+          curl -s https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
+          dep ensure
+        fi
+      # run tests
+      - run: |
+          make -C access/jirabot test
+          make -C access/slackbot test
+          make -C access/mattermost test
+          make -C access/pagerduty test
       # save module cache after successful run
       - save_cache:
           key: go-cache-
