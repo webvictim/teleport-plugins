@@ -14,13 +14,13 @@ jobs:
             - go-cache-
       # get dependencies
       - run: |
-        go version
-        go env
-        go get -v -t -d ./...
-        if [ -f Gopkg.toml ]; then
-          curl -s https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
-          dep ensure
-        fi
+          go version
+          go env
+          go get -v -t -d ./...
+          if [ -f Gopkg.toml ]; then
+            curl -s https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
+            dep ensure
+          fi
       # run tests
       - run: |
           make -C access/jirabot test
