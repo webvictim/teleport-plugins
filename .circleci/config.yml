@@ -5,13 +5,13 @@ jobs:
   build:
     docker:
       - image: circleci/golang:1.13.2
-    working_directory: /go/src/github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME
+    working_directory: /go/src/github.com/webvictim/teleport-plugins
     steps:
       # check out code
       - checkout
       - restore_cache:
           keys:
-            - pkg-cache-{{ checksum "go.sum" }}
+            - pkg-cache-
       # get dependencies
       - run: go get -v -t -d ./...
       # dep ensure
