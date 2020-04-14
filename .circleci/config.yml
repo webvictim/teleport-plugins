@@ -11,13 +11,15 @@ jobs:
       - run:
           name: Check out code
           command: |
-            whoami
-            pwd
             git clone https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
             if [ -n "$CIRCLE_PR_NUMBER" ]; then
                 git fetch origin pull/$CIRCLE_PR_NUMBER/head
             fi
             git reset --hard $CIRCLE_SHA1
+      # restore module cache
+      - restore_cache:
+          keys:
+            - go-cache-            
       # get dependencies
       - run:
           name: Get dependencies
@@ -35,3 +37,8 @@ jobs:
             make -C access/slackbot test
             make -C access/mattermost test
             make -C access/pagerduty test
+      # save module cache after successful run
+      - save_cache:
+          key: go-cache-
+          paths:
+            - "/go/pkg/mod"
