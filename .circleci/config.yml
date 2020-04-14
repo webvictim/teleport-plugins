@@ -5,7 +5,7 @@ jobs:
   build:
     docker:
       - image: cimg/go:1.13.2
-    working_directory: /go/src/github.com/webvictim/teleport-plugins
+    working_directory: /go/src/github.com/gravitational/teleport-plugins
     steps:
       # check out code
       - run:
@@ -13,15 +13,15 @@ jobs:
           command: |
             whoami
             pwd
-            git clone https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .        
+            git clone https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+            if [ -n "$CIRCLE_PR_NUMBER" ]; then
+                git fetch origin pull/$CIRCLE_PR_NUMBER/head
+            fi
+            git reset --hard $CIRCLE_SHA1
       # get dependencies
       - run:
           name: Get dependencies
           command: |
-            whoami
-            pwd
-            go version
-            go env
             go get -v -t -d ./...
             if [ -f Gopkg.toml ]; then
               curl -s https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
