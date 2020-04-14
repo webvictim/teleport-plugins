@@ -8,6 +8,7 @@ jobs:
     working_directory: /go/src/github.com/gravitational/teleport-plugins
     environment:
       TEST_RESULTS: /tmp/test-results
+      TEST_LIST: "jirabot slackbot mattermost pagerduty"
     steps:
       # check out code
       - run:
