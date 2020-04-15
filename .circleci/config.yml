@@ -22,7 +22,8 @@ jobs:
       # restore module cache
       - restore_cache:
           keys:
-            - go-cache-            
+            - go-cache-{{ checksum "Gopkg.lock" }}
+            - go-cache-
       # get dependencies
       - run:
           name: Get dependencies
@@ -44,7 +45,7 @@ jobs:
             done
       # save module/dep cache after successful run
       - save_cache:
-          key: go-cache-
+          key: go-cache-{{ checksum "Gopkg.lock" }}
           paths:
             - "/go/pkg/mod"
             - "/go/pkg/dep"
