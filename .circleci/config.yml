@@ -42,11 +42,12 @@ jobs:
               gotestsum --junitfile /tmp/test-results/$TEST_NAME.xml
               popd
             done
-      # save module cache after successful run
+      # save module/dep cache after successful run
       - save_cache:
           key: go-cache-
           paths:
             - "/go/pkg/mod"
+            - "/go/pkg/dep"
       # store raw test output
       - store_artifacts:
           path: /tmp/test-results
