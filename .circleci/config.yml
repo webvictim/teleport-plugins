@@ -49,6 +49,7 @@ jobs:
           paths:
             - "/go/pkg/mod"
             - "/go/pkg/dep"
+            - "/home/circleci/.cache/go-build"
       # store raw test output
       - store_artifacts:
           path: /tmp/test-results
