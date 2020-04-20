@@ -3,12 +3,17 @@ kind: pipeline
 type: docker
 name: plugins-test
 
-steps:
+clone:
+  disable: true
+
+steps: 
 - name: test
   image: golang:1.13.2
   commands:
-    - mkdir -p $GOPATH/src/github.com/gravitational/teleport
+    - mkdir -p $GOPATH/src/github.com/gravitational/teleport-plugins
+    - git clone https://github.com/webvictim/teleport-plugins.git $GOPATH/src/github.com/gravitational/teleport-plugins
+    - cd $GOPATH/src/github.com/gravitational/teleport-plugins
+    - git checkout $DRONE_COMMIT
     - git clone https://github.com/gravitational/teleport $GOPATH/src/github.com/gravitational/teleport
     - go get -v -t -d ./...
-    - find . -type f -name "*.go" -exec sed -i 's_github.com/gravitational/teleport-plugins_github.com/webvictim/teleport-plugins_g' {} +
     - go test -v $(go list ./... | grep -v access/example)
