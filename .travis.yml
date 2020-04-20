@@ -5,7 +5,7 @@ go:
 
 script: |
   go get -v -t -d ./...
-  find . -type f -name "*.go" -exec sed 's_github.com/gravitational/teleport-plugins_github.com/webvictim/teleport-plugins_g' {} +
+  find . -type f -name "*.go" -exec sed -i 's_github.com/gravitational/teleport-plugins_github.com/webvictim/teleport-plugins_g' {} +
   make -C access/jirabot test
   make -C access/slackbot test
   make -C access/mattermost test
