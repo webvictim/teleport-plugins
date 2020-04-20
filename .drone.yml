@@ -14,6 +14,8 @@ steps:
     - git clone https://github.com/webvictim/teleport-plugins.git $GOPATH/src/github.com/gravitational/teleport-plugins
     - cd $GOPATH/src/github.com/gravitational/teleport-plugins
     - git checkout $DRONE_COMMIT
-    - git clone https://github.com/gravitational/teleport $GOPATH/src/github.com/gravitational/teleport
     - go get -v -t -d ./...
-    - go test -v $(go list ./... | grep -v access/example)
+    - make -C access/jirabot test
+    - make -C access/slackbot test
+    - make -C access/mattermost test
+    - make -C access/pagerduty test
