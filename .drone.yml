@@ -7,6 +7,6 @@ steps:
 - name: test
   image: golang:1.13.2
   commands:
-    - go get -v -t -d ./...
     - find . -type f -name "*.go" -exec sed -i 's_github.com/gravitational/teleport-plugins_github.com/webvictim/teleport-plugins_g' {} +
+    - go get -v -t -d ./...    
     - go test -v $(go list ./... | grep -v access/example)
