@@ -1,1 +1,11 @@
 language: go
+
+go:
+- "1.13.2"
+
+script: |
+  go get -v -t -d ./...
+  make -C access/jirabot test
+  make -C access/slackbot test
+  make -C access/mattermost test
+  make -C access/pagerduty test
