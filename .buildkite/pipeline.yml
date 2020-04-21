@@ -1,9 +1,11 @@
 steps:
-  - command: |
+  - name: ":golang: Tests"
+    command: |
       go get -v -t -d ./...
       make -C access/jirabot test
       make -C access/slackbot test
       make -C access/mattermost test
-      make -C access/pagerduty test"
-    env:
-      BUILDKITE_DOCKER_COMPOSE_CONTAINER: "golang"
+      make -C access/pagerduty test
+    plugins:
+      - docker-compose#v3.0.3:
+          run: golang
