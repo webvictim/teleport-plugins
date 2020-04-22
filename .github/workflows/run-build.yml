@@ -62,7 +62,7 @@ jobs:
         name: teleport-plugins-artifacts
         path: ${{ github.workspace }}/go/src/github.com/gravitational/teleport-plugins/build
         
-    - name: Upload artifacts to 
+    - name: Upload artifacts to S3
       uses: jakejarvis/s3-sync-action@master
       with:
         args: --acl public-read --follow-symlinks --delete
