@@ -1,5 +1,5 @@
 steps:
-  - name: ":golang: Build and upload to S3"
+  - name: ":golang: Build plugins and upload to S3"
     command: |
       go get -v -t -d ./...
       mkdir -p build
