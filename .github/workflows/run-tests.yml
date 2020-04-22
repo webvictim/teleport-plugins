@@ -1,0 +1,63 @@
+name: run-tests
+
+on:
+  push:
+    branches: [ 'master', 'gus/.*' ]
+  pull_request:
+    branches: [ 'master', 'gus/.*' ]
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Set up Go 1.13.2
+      uses: actions/setup-go@v2-beta
+      with:
+        go-version: 1.13.2
+
+    - name: Check out code
+      uses: actions/checkout@v2
+      with:
+        path: go/src/github.com/gravitational/teleport-plugins
+
+    - name: Set GOPATH, update system PATH and create GOBIN
+      run: |
+        echo "::set-env name=GOPATH::${{ github.workspace }}/go"
+        echo "::set-env name=GOBIN::${{ github.workspace }}/go/bin"
+        echo "::add-path::${{ github.workspace }}/go/bin"
+        mkdir -p $GITHUB_WORKSPACE/go/bin
+
+    - name: Cache Go packages
+      uses: actions/cache@v1
+      id: cache-go
+      env:
+        cache-name: go
+      with:
+        path: ~/go/pkg/dep
+        key: ${{ runner.os }}-go-${{ hashFiles('**/Gopkg.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-go-
+
+    - name: Download dependencies
+      if: steps.cache-go.outputs.cache-hit != 'true'
+      run: |
+        go get -v -t -d ./...
+      working-directory: ${{ github.workspace }}/go/src/github.com/gravitational/teleport-plugins
+
+    - name: Run Jira tests
+      run: make -C access/jirabot test
+      working-directory: ${{ github.workspace }}/go/src/github.com/gravitational/teleport-plugins
+
+    - name: Run Slack tests
+      run: make -C access/slackbot test
+      working-directory: ${{ github.workspace }}/go/src/github.com/gravitational/teleport-plugins
+
+    - name: Run Mattermost tests
+      run: make -C access/mattermost test
+      working-directory: ${{ github.workspace }}/go/src/github.com/gravitational/teleport-plugins
+
+    - name: Run Pagerduty tests
+      run: make -C access/pagerduty test
+      working-directory: ${{ github.workspace }}/go/src/github.com/${{ github.repository }}
