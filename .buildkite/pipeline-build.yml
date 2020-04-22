@@ -7,6 +7,8 @@ steps:
         make -C access/$$ARTIFACT release
         cp access/$$ARTIFACT/*.tar.gz build/
       done
+      # change owner to avoid permissions issues later
+      chown -R 1000:1000 build
     plugins:
       - docker-compose#v3.0.3:
           run: golang
