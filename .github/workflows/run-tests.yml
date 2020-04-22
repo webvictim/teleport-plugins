@@ -60,4 +60,4 @@ jobs:
 
     - name: Run Pagerduty tests
       run: make -C access/pagerduty test
-      working-directory: ${{ github.workspace }}/go/src/github.com/${{ github.repository }}
+      working-directory: ${{ github.workspace }}/go/src/github.com/gravitational/teleport-plugins
