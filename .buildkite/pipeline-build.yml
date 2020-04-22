@@ -1,0 +1,15 @@
+steps:
+  - name: ":golang: Build and upload to S3"
+    command: |
+      go get -v -t -d ./...
+      mkdir -p build
+      for ARTIFACT in jirabot slackbot mattermost pagerduty; do
+        make -C access/$ARTIFACT release
+        cp access/$ARTIFACT/*.tar.gz build/
+      done
+    plugins:
+      - docker-compose#v3.0.3:
+          run: golang
+      - envato/aws-s3-sync#v0.1.0:
+          source: build/
+          destination: s3://gusteleport.gravitational.io/plugins/
