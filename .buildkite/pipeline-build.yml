@@ -4,8 +4,8 @@ steps:
       go get -v -t -d ./...
       mkdir -p build
       for ARTIFACT in jirabot slackbot mattermost pagerduty; do
-        make -C access/$ARTIFACT release
-        cp access/$ARTIFACT/*.tar.gz build/
+        make -C access/$$ARTIFACT release
+        cp access/$$ARTIFACT/*.tar.gz build/
       done
     plugins:
       - docker-compose#v3.0.3:
