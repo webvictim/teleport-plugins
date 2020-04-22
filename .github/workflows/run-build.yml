@@ -29,38 +29,38 @@ jobs:
     - name: Download dependencies and create artifact directory
       run: |
         go get -v -t -d ./...
-        mkdir -p build/
+        mkdir -p github-actions/
       working-directory: ${{ github.workspace }}/go/src/github.com/gravitational/teleport-plugins
 
     - name: Build and copy Jirabot
       run: |
         make -C access/jirabot release
-        cp access/jirabot/*.tar.gz build/
+        cp access/jirabot/*.tar.gz github-actions/
       working-directory: ${{ github.workspace }}/go/src/github.com/gravitational/teleport-plugins
       
     - name: Build and copy Slackbot
       run: |
         make -C access/slackbot release
-        cp access/slackbot/*.tar.gz build/
+        cp access/slackbot/*.tar.gz github-actions/
       working-directory: ${{ github.workspace }}/go/src/github.com/gravitational/teleport-plugins
       
     - name: Build and copy Mattermost
       run: |
         make -C access/mattermost release
-        cp access/mattermost/*.tar.gz build/
+        cp access/mattermost/*.tar.gz github-actions/
       working-directory: ${{ github.workspace }}/go/src/github.com/gravitational/teleport-plugins
       
     - name: Build and copy Pagerduty
       run: |
         make -C access/pagerduty release
-        cp access/pagerduty/*.tar.gz build/
+        cp access/pagerduty/*.tar.gz github-actions/
       working-directory: ${{ github.workspace }}/go/src/github.com/gravitational/teleport-plugins
 
     - name: Upload artifacts to Github
       uses: actions/upload-artifact@v1
       with:
         name: teleport-plugins-artifacts
-        path: ${{ github.workspace }}/go/src/github.com/gravitational/teleport-plugins/build
+        path: ${{ github.workspace }}/go/src/github.com/gravitational/teleport-plugins/github-actions
         
     - name: Upload artifacts to S3
       uses: jakejarvis/s3-sync-action@master
@@ -72,4 +72,4 @@ jobs:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         AWS_REGION: us-west-2
-        SOURCE_DIR: ${{ github.workspace }}/go/src/github.com/gravitational/teleport-plugins/build
+        SOURCE_DIR: ${{ github.workspace }}/go/src/github.com/gravitational/teleport-plugins/github-actions/
