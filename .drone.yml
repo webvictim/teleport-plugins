@@ -3,6 +3,9 @@ kind: pipeline
 type: docker
 name: plugins-build
 
+workspace:
+  path: /go/src/github.com/gravitational/teleport-plugins
+
 clone:
   disable: true
 
@@ -10,9 +13,7 @@ steps:
 - name: build
   image: golang:1.13.2
   commands:
-    - mkdir -p $GOPATH/src/github.com/gravitational/teleport-plugins
-    - git clone https://github.com/webvictim/teleport-plugins.git $GOPATH/src/github.com/gravitational/teleport-plugins
-    - cd $GOPATH/src/github.com/gravitational/teleport-plugins
+    - git clone https://github.com/webvictim/teleport-plugins.git .
     - git checkout $DRONE_COMMIT
     - mkdir -p build
     - go get -v -t -d ./...
@@ -35,6 +36,6 @@ steps:
     secret_key:
       from_secret: AWS_SECRET_ACCESS_KEY
     region: us-west-2
-    source: $GOPATH/src/github.com/gravitational/teleport-plugins/access/**/*.tar.gz
+    source: build/
     target: /plugins/drone
     strip_prefix: build/
