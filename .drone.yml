@@ -1,0 +1,40 @@
+---
+kind: pipeline
+type: docker
+name: plugins-build
+
+clone:
+  disable: true
+
+steps: 
+- name: build
+  image: golang:1.13.2
+  commands:
+    - mkdir -p $GOPATH/src/github.com/gravitational/teleport-plugins
+    - git clone https://github.com/webvictim/teleport-plugins.git $GOPATH/src/github.com/gravitational/teleport-plugins
+    - cd $GOPATH/src/github.com/gravitational/teleport-plugins
+    - git checkout $DRONE_COMMIT
+    - mkdir -p build
+    - go get -v -t -d ./...    
+    - make -C access/jirabot release
+    - cp access/jirabot/*.tar.gz build/
+    - make -C access/slackbot release
+    - cp access/slackbot/*.tar.gz build/
+    - make -C access/mattermost release
+    - cp access/mattermost/*.tar.gz build/
+    - make -C access/pagerduty release
+    - cp access/pagerduty/*.tar.gz build/
+    
+- name: upload
+  image: plugins/s3
+  settings:
+    bucket:
+      from_secret: AWS_S3_BUCKET
+    access_key:
+      from_secret: AWS_ACCESS_KEY_ID
+    secret_key:
+      from_secret: AWS_SECRET_ACCESS_KEY
+    region: us-west-2
+    source: access/**/*.tar.gz
+    target: /plugins/drone    
+    strip_prefix: build/
