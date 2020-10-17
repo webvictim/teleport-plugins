@@ -1,0 +1,59 @@
+# Golang CircleCI 2.0 configuration file
+# Check https://circleci.com/docs/2.0/language-go/ for more details
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/golang:1.13.2
+    working_directory: /go/src/github.com/gravitational/teleport-plugins
+    environment:
+      TEST_RESULTS: /tmp/test-results
+      TEST_LIST: "jirabot slackbot mattermost pagerduty"
+    steps:
+      # check out code
+      - run:
+          name: Check out code
+          command: |
+            git clone https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+            if [ -n "$CIRCLE_PR_NUMBER" ]; then
+                git fetch origin pull/$CIRCLE_PR_NUMBER/head
+            fi
+            git reset --hard $CIRCLE_SHA1
+      # restore module cache
+      - restore_cache:
+          keys:
+            - go-cache-{{ checksum "Gopkg.lock" }}
+            - go-cache-
+      # get dependencies
+      - run:
+          name: Get dependencies
+          command: |
+            go get -v -t -d ./...
+            if [ -f Gopkg.toml ]; then
+              curl -s https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
+              dep ensure -v
+            fi
+      # run tests
+      - run: 
+          name: Run tests
+          command: |
+            mkdir -p ${TEST_RESULTS}
+            for TEST_NAME in ${TEST_LIST}; do
+              pushd access/$TEST_NAME
+              gotestsum --junitfile /tmp/test-results/$TEST_NAME.xml
+              popd
+            done
+      # save module/dep cache after successful run
+      - save_cache:
+          key: go-cache-{{ checksum "Gopkg.lock" }}
+          paths:
+            - "/go/pkg/mod"
+            - "/go/pkg/dep"
+            - "/home/circleci/.cache/go-build"
+      # store raw test output
+      - store_artifacts:
+          path: /tmp/test-results
+          destination: raw-test-output
+      # store test result output
+      - store_test_results:
+          path: /tmp/test-results
